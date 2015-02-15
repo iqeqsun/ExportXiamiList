@@ -98,7 +98,7 @@ def link_category(link):
 
 def xiamilist():        
 	userEntryURL = userEntryLink.get()
-	if (not BeginLink.get().isdigit()) or ((not BeginLink.get().isdigit())):
+	if (not BeginLink.get().isdigit()) or (not EndLink.get().isdigit()):
 		print_log(log,'\n起止页必须为数字!\n')
 		return
 	BeginPage=int(BeginLink.get())

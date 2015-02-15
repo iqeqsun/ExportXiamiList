@@ -5,6 +5,7 @@ import math
 import re
 import os
 import urllib.request
+import time
 
 agent1 = 'Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/38.0.2125.122 Safari/537.36'
 agent2 = 'Mozilla/5.0 (compatible; MSIE 10.0; Windows NT 6.1; Trident/6.0)'
@@ -82,7 +83,7 @@ def get_collect_song(soup,collectSongList):
 
 		
 
-def link_category(link):
+def link_category(link):        
 	uLink = re.search(r'(?P<link>http:\/\/www.xiami.com\/space\/lib-song\/u\/\d+)\D*',link)
 	collectLink = re.search(r'(?P<link>http:\/\/www.xiami.com\/collect\/\d+)\D*',link)
 	if (not uLink) and (not collectLink):
@@ -92,20 +93,26 @@ def link_category(link):
 		category = 'u'
 	elif collectLink:
 		url = collectLink.group('link')
-		category = 'collect'
+		category = 'collect'		
 	return (category,url)
 
-def xiamilist():
+def xiamilist():        
 	userEntryURL = userEntryLink.get()
-
-	URLInfo = link_category(userEntryURL)
+	if (not BeginLink.get().isdigit()) or ((not BeginLink.get().isdigit())):
+		print_log(log,'\n起止页必须为数字!\n')
+		return
+	BeginPage=int(BeginLink.get())
+	EndPage=int(EndLink.get())
+	print_log(log,'\n起始页:'+str(BeginLink.get())+' 结束页:'+str(EndLink.get())+'\n')
+	URLInfo = link_category(userEntryURL)	
 	userURL = URLInfo[1]	
 	songList = []
+	print_log(log,'正在抓取第1页...')
 	websoup = BeautifulSoup(open_link(userURL,agent1))
 	
 	if URLInfo[0] == 'u':
 		xmllistname = '虾米红心'
-		filename = 'Xiami.kgl'
+		filename = 'Xiami'+time.strftime('%Y%m%d%H%M%S',time.localtime(time.time()))+'.kgl'
 		songSumSoup = websoup.find(attrs={'class':'all_page'})
 		global songSum
 		songSum = re.search(r'共(?P<sum>\d+)条',str(songSumSoup))
@@ -117,8 +124,13 @@ def xiamilist():
 		# get other page song
 		pageNum = math.ceil(int(songSum)/25)
 		if pageNum > 1 :
-			for i in range(2,pageNum+1):
+			if BeginPage<=1:
+				BeginPage=2
+			if EndPage>=pageNum:
+				EndPage=pageNum
+			for i in range(BeginPage,EndPage+1):
 				XiamiPageURL = userURL + "/page/" + str(i)
+				print_log(log,'正在抓取第'+str(i)+'页...')
 				if (i % 2) == 0:
 					pagesoup = BeautifulSoup(open_link(XiamiPageURL,agent1))
 				else:
@@ -179,6 +191,18 @@ userEntryTitle = Label(userEntry,text='歌单或精选集链接')
 userEntryTitle.pack(side=LEFT)
 userEntryLink = Entry(userEntry,width=50)
 userEntryLink.pack(side=LEFT)
+
+PageEntry = Label(root,width=350)
+PageEntry.pack()
+
+Label(PageEntry,text = '起始页').pack(side=LEFT,ipadx = 10)
+BeginLink = Entry(PageEntry,width=20)
+BeginLink.pack(side=LEFT,ipadx = 10)
+
+Label(PageEntry,text = '结束页').pack(side=LEFT,ipadx = 10)
+EndLink = Entry(PageEntry,width=20)
+EndLink.pack(side=LEFT,ipadx = 10)
+
 export = Button(root,width=20,text='导出',command=onclick)
 export.pack(pady=12)
 
@@ -188,7 +212,6 @@ log = Text(root)
 log.config(width=70,height=15)
 log.insert(END,readme)
 log.pack(side=LEFT,fill='both')
-
 scrollbar = Scrollbar(root)
 scrollbar.pack(side=RIGHT,fill=Y)
 scrollbar.config(command = log.yview())

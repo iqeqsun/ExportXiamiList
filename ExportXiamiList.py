@@ -83,7 +83,7 @@ def get_collect_song(soup,collectSongList):
 
 		
 
-def link_category(link):        
+def link_category(link):
 	uLink = re.search(r'(?P<link>http:\/\/www.xiami.com\/space\/lib-song\/u\/\d+)\D*',link)
 	collectLink = re.search(r'(?P<link>http:\/\/www.xiami.com\/collect\/\d+)\D*',link)
 	if (not uLink) and (not collectLink):
@@ -93,10 +93,10 @@ def link_category(link):
 		category = 'u'
 	elif collectLink:
 		url = collectLink.group('link')
-		category = 'collect'		
+		category = 'collect'
 	return (category,url)
 
-def xiamilist():        
+def xiamilist():
 	userEntryURL = userEntryLink.get()
 	if (not BeginLink.get().isdigit()) or (not EndLink.get().isdigit()):
 		print_log(log,'\n起止页必须为数字!\n')
@@ -206,7 +206,7 @@ EndLink.pack(side=LEFT,ipadx = 10)
 export = Button(root,width=20,text='导出',command=onclick)
 export.pack(pady=12)
 
-readme = '获取虾米歌单链接方法：\n登录虾米网页点击顶栏中的「我的音乐」，然后点击「音乐库」下面的「收藏的歌曲」所获得的链接即歌单链接（一定要点击不然链接不对）。\n********************\n歌单正确链接参考 http://www.xiami.com/lib-song/u/123456?spm=xxx\n精选集正确连接参考 http://www.xiami.com/collect/123456?spm=xxx\n********************\n'
+readme = '获取虾米歌单链接方法：\n登录虾米网页点击顶栏中的「我的音乐」，然后点击「音乐库」下面的「收藏的歌曲」所获得的链接即歌单链接（一定要点击不然链接不对）。\n********************\n歌单正确链接参考 http://www.xiami.com/lib-song/u/123456?spm=xxx\n精选集正确连接参考 http://www.xiami.com/collect/123456?spm=xxx\n********************\n由于虾米音乐对未登录的歌单和精选集抓取请求,超过25页左右就会弹出验证码导致获取失败.\n如果你的歌单页数比较多,可以分多次生成多个歌单文件.建议每次采20页以内,然后歇五分钟喝杯茶:)\n后续版本考虑加入带cookies的请求抓取歌单.'
 
 log = Text(root)
 log.config(width=70,height=15)
